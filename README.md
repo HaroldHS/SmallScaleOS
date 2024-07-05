@@ -1,11 +1,12 @@
 # SmallScaleOS
-SmallScaleOS is a small scale, terminal based, operating system with a nano-kernel included.
+SmallScaleOS is a small scale, terminal based, 64-bit operating system with a nano-kernel included.
 
 ### Requirements
 * NASM
 * GCC
-* QEMU
+* GDB
 * GRUB
+* QEMU
 
 > Note: To run the operating system in WSL(Ubuntu), run this command in order to build a successful build-file `sudo apt install make grub-common xorriso grub-pc-bin`.
 
@@ -25,6 +26,28 @@ make clean
 ```
 
 > Note: After building the ISO file, 2 other ways to run it are using virtual machine software or burn it to an external device (USB/CD) then run it via BIOS.
+
+### Debug with QEMU
+Open a terminal, run the below script (running QEMU server and pause the operating system)
+```bash
+qemu-system-x86_64 -s -S ./build/SmallScaleOS.iso
+```
+<br />
+
+Open another terminal, run the below script (run GDB)
+```bash
+gdb ./build/SmallScaleOS.bin
+# Then, inside the gdb, run the command below
+target remote :1234
+# Set the syntax flavor to intel x86 syntax
+set disassembly-flavor intel
+# To put a break pointer when calling kernel_main, run the command below
+break *kernel_main
+```
+
+### Error message when bootloading
+* `[-] NSC` means not supported CPU. The supported CPUs for this operating system are Intel and AMD.
+* `[-] NSLM` means not supporting long mode. This operating system should runs in 64-bit machine.
 
 ### Features of SmallScaleOS
 - [ ] Context Switching
