@@ -2,6 +2,12 @@
 SmallScaleOS is a small scale, terminal based, 64-bit operating system with a nano-kernel included.
 
 ### Requirements
+
+##### Hardware Requirements
+* x86-64 CPU
+* VGA Text mode supported (Text Resolution = 160x50 / Graphics Resolution = 1280x400 / 720x512)
+
+##### Software Requirements
 * NASM
 * GCC
 * GDB
@@ -25,7 +31,7 @@ qemu-system-x86_64 -kernel ./build/SmallScaleOS.bin
 make clean
 ```
 
-> Note: After building the ISO file, 2 other ways to run it are using virtual machine software or burn it to an external device (USB/CD) then run it via BIOS.
+> Note: After building the ISO file, 2 other ways to run it are using virtual machine software or burn it to an external device (USB/CD) then run it via BIOS/UEFI.
 
 ### Debug with QEMU
 Open a terminal, run the below script (running QEMU server and pause the operating system)
@@ -50,7 +56,8 @@ break *kernel_main
 * `[-] NSLM` means not supporting long mode. This operating system should runs in 64-bit machine.
 
 ### Features of SmallScaleOS
-- [ ] Context Switching
+- [x] Context Switching
 - [ ] Interrupt
 - [ ] Inter-process Communication (IPC)
 - [ ] Memory Management
+- [x] Paging

@@ -1,23 +1,27 @@
 ENTRY (_start)
 
 SECTIONS {
-	. = 2M;
 
-	.text : {
-		. = ALIGN(16);           /* 16 bytes boundary */
-		KEEP(*( .multiboot2 ))
+	. = 1M;
+
+	.multiboot2 : {
+		KEEP(*(.multiboot2))
+	}
+
+	.text ALIGN(0x1000): {
 		*(.text)
 	}
 
-	.rodata : {
+	.rodata ALIGN(0x1000) : {
 		*(.rodata)
 	}
 
-	.data : {
+	.data ALIGN(0x1000) : {
 		*(.data)
 	}
 
-	.bss : {
+	.bss ALIGN(0x1000) : {
+		*(COMMON)
 		*(.bss)
 	}
 }

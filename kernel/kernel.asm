@@ -7,6 +7,8 @@
 global kernel_main
 
 section .text
+bits 64
+
 ; import functions in vga.asm
 extern vga_write_char
 
