@@ -6,6 +6,9 @@
 ; License: GPL-3.0
 ;
 
+; import kernel_main() from kernel.c
+extern kernel_main
+
 %define MULTIBOOT2_MAGIC_NUM             0xe85250d6
 %define MULTIBOOT2_BOOTLOADER_MAGIC_NUM  0x36d76289
 
@@ -50,26 +53,23 @@ multiboot2_header_end:
 section .text
 bits 32
 
-; import kernel_main() from kernel.asm
-extern kernel_main
-
 global _start
 _start:
-	cli                                        ; clear/disable interrupt when inside real mode
-	mov esp, stack_top                         ; set stack pointer
-	call check_cpuid                           ; check the system CPU type
-	call check_long_mode                       ; check if the system support long mode
-	call setup_page_table                      ; setup paging mechanism
-	call enable_paging                         ; enable paging
+	cli                                           ; clear/disable interrupt when inside real mode
+	mov esp, stack_top                            ; set stack pointer
+	call check_cpuid                              ; check the system CPU type
+	call check_long_mode                          ; check if the system support long mode
+	call setup_page_table                         ; setup paging mechanism
+	call enable_paging                            ; enable paging
 
 	; write "[+] OK" to VGA buffer
 	mov dword [0xb8140], 0x0f2b0f5b
 	mov dword [0xb8144], 0x0f200f5d
 	mov dword [0xb8148], 0x0f4b0f4f
 
-	lgdt [GDT64.pointer]                       ; load GDT
-	jmp GDT64.kernel_code_segment:kernel_main  ; call kernel_main using kernel code segment mode
-	hlt                                        ; halt the CPU
+	lgdt [GDT64.pointer]                           ; load GDT
+	jmp GDT64.kernel_code_segment:long_mode_entry  ; call kernel_main using kernel code segment mode
+	hlt                                            ; halt the CPU
 
 
 
@@ -340,3 +340,22 @@ GDT64:
         dq GDT64
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+section .text
+bits 64
+
+long_mode_entry:
+	; Reload segments
+	mov ax, GDT64.kernel_data_segment
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov ss, ax
+
+	call kernel_main
+
+	hlt
